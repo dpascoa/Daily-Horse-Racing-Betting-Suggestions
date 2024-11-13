@@ -1,6 +1,6 @@
 {
     "builds": [
-      { "src": "api/index.py", "use": "@vercel/python" }
+      { "src": "api/index.py", "use": "@vercel/python","config": {"buildCommand": "apt-get update && apt-get install -y libxml2-dev libxslt-dev && pip install --no-cache-dir -r requirements.txt"} }
     ],
     "routes": [
       { "src": "/(.*)", "dest": "api/index.py" }
