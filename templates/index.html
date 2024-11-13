@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horse Race Betting Suggestions</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
+    <style>
+        body {
+            background: linear-gradient(45deg, #ff6b6b, #f8b400); /* Vibrant gradient background */
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+        }
+
+        .table-container {
+            background-color: rgba(255, 255, 255, 0.85); /* Light background for table */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            color: #333;
+        }
+
+        .table th, .table td {
+            text-align: center;
+            padding: 15px;
+            font-size: 1.1rem;
+        }
+
+        .table th {
+            background-color: #4CAF50; /* Green header */
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .table tr:hover {
+            background-color: #ddd; /* Highlight rows on hover */
+        }
+
+        .table td {
+            font-weight: 500;
+        }
+
+        .losing-bet {
+            background-color: #ff6666; /* Light red for SP < 10 */
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .winning-bet {
+            background-color: #66cc66; /* Light green for SP > 9.99 */
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        /* Discreet About Section */
+        #credits {
+            /*background-color: #f8f8f8; /* Light, neutral background */
+            color: #333;
+            padding: 20px 15px;
+            margin-top: 40px;
+            border-radius: 10px;
+            /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        #credits h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #666; /* Subtle gray for the title */
+            margin-bottom: 10px;
+        }
+
+        #credits p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        #credits a {
+            color: #f8b400; /* Subtle highlight color */
+            text-decoration: none;
+        }
+
+        #credits a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Daily Horse Racing Betting Suggestions</h1>
+       
+        <div class="table-container">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Hour</th>
+                        <th>Suggested Bet</th>
+                        <th>Winner Odd</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for race in races %}
+                    <tr>
+                        <td>{{ race['hour'] }}</td>
+                        <td>{{ race['bet'] }}</td>
+
+                        {% set matched_result = results | selectattr('hour', 'equalto', race['hour']) | first %}
+                        {% if matched_result %}
+                            <td class="{% if 'SP < 10' in race['bet'] and matched_result and matched_result['odd'] < 10 %}winning-bet{% elif 'SP < 10' in race['bet'] and matched_result and matched_result['odd'] >= 10 %}losing-bet{% elif 'SP >= 10' in race['bet'] and matched_result and matched_result['odd'] >= 10 %}winning-bet{% elif 'SP >= 10' in race['bet'] and matched_result and matched_result['odd'] < 10 %}losing-bet{% else %}default-bet{% endif %}">{{ matched_result['odd'] }}</td>
+                        {% else %}
+                            <td> </td>    <!-- Display "No odds" if no match -->
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Subtle About Section -->
+        <section id="credits">
+            <p>Designed, developed, and strategically envisioned by <strong>danielpáscoa</strong>. 😉🤞</p>
+        </section>
+    </div>
+</body>
+</html>
