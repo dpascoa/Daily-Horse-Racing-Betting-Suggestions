@@ -1,12 +1,10 @@
-# api/index.py
-
+# app.py
 from flask import Flask, render_template
 import requests
 from bs4 import BeautifulSoup
 from lxml import etree
 import re
 
-# Initialize Flask app
 app = Flask(__name__)
 
 def scrape_racecards():
@@ -51,7 +49,8 @@ def scrape_racecards():
                     winning_odd = tree.xpath('//*[@id="ReportBody"]/table/tbody[1]/tr[1]/td[15]/span[2]')
                     race_time = soup.find(class_="rp-racetimes-mobile").text
                     race_time = re.findall(time_pattern, race_time)
-                    race_results.append({"hour": race_time[0], "odd": float(winning_odd[0].text)})
+                    if race_time and winning_odd:
+                        race_results.append({"hour": race_time[0], "odd": float(winning_odd[0].text)})
 
             races_today_sorted = sorted(races_today, key=lambda x: x["hour"])
             race_results_sorted = sorted(race_results, key=lambda x: x["hour"])
@@ -61,29 +60,13 @@ def scrape_racecards():
         return [], []
     return [], []
 
-@app.route("/")
+@app.route('/')
 def home():
     try:
         races_today, results_today = scrape_racecards()
-        return render_template("index.html", races=races_today, results=results_today)
+        return render_template('index.html', races=races_today, results=results_today)
     except Exception as e:
         return f"An error occurred: {str(e)}", 500
 
-def handle_request(request):
-    """Handle request for Vercel serverless function"""
-    with app.request_context(request):
-        return app.handle_request()
-
-# For Vercel serverless function
-from http.server import BaseHTTPRequestHandler
-
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-        
-        with app.test_client() as client:
-            response = client.get(self.path)
-            self.wfile.write(response.data)
-        return
+if __name__ == '__main__':
+    app.run(debug=False)
