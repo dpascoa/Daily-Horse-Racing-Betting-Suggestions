@@ -1,14 +1,16 @@
 # api/index.py
 
+from flask import Flask, render_template
 import requests
 from bs4 import BeautifulSoup
-from flask import Flask, render_template
 from lxml import etree
 import re
 
+# Initialize Flask app
 app = Flask(__name__)
 
 def scrape_racecards():
+    # Your existing scrape_racecards function code remains the same
     time_pattern = r'\b\d{2}:\d{2}\b'
     url = "https://www.timeform.com/horse-racing/racecards"
     headers = {
@@ -56,12 +58,14 @@ def scrape_racecards():
         return races_today_sorted, race_results_sorted
     else:
         print(f"Failed to retrieve the page. Status code: {response.status_code}")
-        return []
+        return [], []
 
 @app.route("/")
 def home():
-    races_today, results_today = scrape_racecards()
-    return render_template("index.html", races=races_today, results=results_today)
+    try:
+        races_today, results_today = scrape_racecards()
+        return render_template("index.html", races=races_today, results=results_today)
+    except Exception as e:
+        return f"An error occurred: {str(e)}", 500
 
-# Vercel requires this line to recognize the Flask app as an endpoint
-handler = app
+# Remove the handler = app line since we'll use the app directly
